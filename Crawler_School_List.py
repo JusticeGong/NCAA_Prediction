@@ -26,6 +26,33 @@ for i in range(2, 479):
 print(urlname)
 print(schoolname)
 
+year = []
+
+
+for a in soup.find_all('tr'):
+    b = a.find_all('td')
+    if b:
+        year = year + b[3].contents
+print(year)
+
+m = 0
+for i in year:
+    if int(i) < 2017:
+        urlname[m] = ''
+        schoolname[m] = ''
+    m = m + 1
+
+print(urlname)
+print(schoolname)
+
+urlname = [x for x in urlname if x]
+schoolname = [x for x in schoolname if x]
+
+print(urlname)
+print(schoolname)
+
+print(len(urlname))
+print(len(schoolname))
 
 with open('urlname.txt', 'w', encoding="utf8") as fu:
     fu.write(str(urlname))
