@@ -17,43 +17,42 @@ subpagelist = ['school', 'advanced-school', 'advanced-opponent']
 
 for year in yearlist:
     print(year)
-    cursor = []
     for subpage in subpagelist:
-        url = "www.sports-reference.com/cbb/seasons/" + year + "-" + subpage + "-stats.html"
-        r = requests.get("http://" + url)
-        if str(r) != '<Response [404]>':
-            # print(r)
-            data = r.text
-            soup = BeautifulSoup(data, "html.parser")
-            # print(soup.get_text)
-            for a in soup.find_all('tr'):
-                b = a.find_all('td')
-                # print(b)
-                if b:
-                    if 'href' in str(b[0].contents[0]):
-                        if str(subpage) == 'school':
-                            cursor.append(b[0].contents[0].contents[0] + ",")
-                            with open('test.txt', 'w') as f:
-                                for n in range(0, len(cursor)):
+        with open(year + subpage + '.csv', 'w') as f:
+            url = "www.sports-reference.com/cbb/seasons/" + year + "-" + subpage + "-stats.html"
+            r = requests.get("http://" + url)
+            if str(r) != '<Response [404]>':
+                # print(r)
+                data = r.text
+                soup = BeautifulSoup(data, "html.parser")
+                # print(soup.get_text)
+                for a in soup.find_all('tr'):
+                    cursor = ''
+                    b = a.find_all('td')
+                    # print(b)
+                    if b:
+                        if 'href' in str(b[0].contents[0]):
+                            if str(subpage) == 'school':
+                                    cursor = cursor + b[0].contents[0].contents[0] + ","
                                     for i in range(1,15):
                                         # print(b[i].contents[0])
-                                        cursor[n] = cursor[n] + str(b[i].contents[0]) + ","
-                                    f.write(cursor[n] + '\n')
-                                f.close()
-                            # for i in range(16,33):
-                            #     # print(b[i].contents[0])
-                            #     cursor = cursor + str(b[i].contents[0]) + ","
-                            # print(cursor)
-                        # elif str(subpage) == 'advanced-school':
-                        #     for i in range(16, 29):
-                        #         # print(b[i].contents[0])
-                        #         cursor = cursor + str(b[i].contents[0]) + ","
-                        #     print(cursor)
-                        # else:
-                        #     for i in range(16, 29):
-                        #         # print(b[i].contents[0])
-                        #         cursor = cursor + str(b[i].contents[0]) + ","
-                        #     print(cursor)
+                                        cursor = cursor + str(b[i].contents[0]) + ","
+                                    # print(cursor)
+                                    for i in range(16,33):
+                                        # print(b[i].contents[0])
+                                        cursor = cursor + str(b[i].contents[0]) + ","
+                            elif str(subpage) == 'advanced-school':
+                                for i in range(16, 29):
+                                    # print(b[i].contents[0])
+                                    cursor = cursor + str(b[i].contents[0]) + ","
+                                print(cursor)
+                            else:
+                                for i in range(16, 29):
+                                    # print(b[i].contents[0])
+                                    cursor = cursor + str(b[i].contents[0]) + ","
+                                print(cursor)
+                            f.write(cursor+ '\n')
+            f.close()
 
                             # print(b[0].contents[0].contents[0])
                             # print(cursor + b[16].contents[0])
