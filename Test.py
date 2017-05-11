@@ -32,9 +32,9 @@ for year in yearlist:
                     if 'href' in str(b[0].contents[0]):
                         if str(subpage) == 'school':
                             cursor = cursor + b[0].contents[0].contents[0] + ","
-                            for i in range(0,15):
+                            for i in range(1,15):
                                 # print(b[i].contents[0])
-                                cursor = cursor + b[i].contents[0] + ","
+                                cursor = cursor + str(b[i].contents[0]) + ","
                             print(cursor)
 
 
