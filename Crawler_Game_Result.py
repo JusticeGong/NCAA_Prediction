@@ -52,11 +52,11 @@ for year in yearlist:
                             if 'href' in str(b[3].contents[0]):
                                 if b[2].contents:
                                     if b[2].contents[0] == '@':
-                                        home = 'H'
+                                        home = 'A'
                                     else:
                                         home = 'N'
                                 else:
-                                    home = 'A'
+                                    home = 'H'
                                 oppo = b[3].contents[0].contents[0]
                                 result = b[5].contents[0]
                                 t1score = b[6].contents[0]
