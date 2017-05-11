@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+from array import array
 import time
 
 import re
@@ -10,12 +11,13 @@ urlnamelist = ['abilene-christian', 'air-force', 'akron', 'alabama-am', 'alabama
 schoolnamelist = ['Abilene Christian Wildcats', 'Air Force Falcons', 'Akron Zips', 'Alabama A&M Bulldogs', 'Alabama Crimson Tide', 'Alabama State Hornets', 'Alabama-Birmingham Blazers', 'Albany (NY) Great Danes', 'Alcorn State Braves', 'American Eagles', 'Appalachian State Mountaineers', 'Arizona State Sun Devils', 'Arizona Wildcats', 'Arkansas Razorbacks', 'Arkansas State Red Wolves', 'Arkansas-Little Rock Trojans', 'Arkansas-Pine Bluff Golden Lions', 'Army Black Knights', 'Auburn Tigers', 'Austin Peay Governors', 'Ball State Cardinals', 'Baylor Bears', 'Belmont Bruins', 'Bethune-Cookman Wildcats', 'Binghamton Bearcats', 'Boise State Broncos', 'Boston College Eagles', 'Boston University Terriers', 'Bowling Green State Falcons', 'Bradley Braves', 'Brigham Young Cougars', 'Brown Bears', 'Bryant Bulldogs', 'Bucknell Bison', 'Buffalo Bulls', 'Butler Bulldogs', 'Cal Poly Mustangs', 'Cal State Bakersfield Roadrunners', 'Cal State Fullerton Titans', 'Cal State Northridge Matadors', 'Campbell Fighting Camels', 'Canisius Golden Griffins', 'Central Arkansas Bears', 'Central Connecticut State Blue Devils', 'Central Florida Knights', 'Central Michigan Chippewas', 'Charleston Southern Buccaneers', 'Charlotte 49ers', 'Chattanooga Mocs', 'Chicago State Cougars', 'Cincinnati Bearcats', 'Citadel Bulldogs', 'Clemson Tigers', 'Cleveland State Vikings', 'Coastal Carolina Chanticleers', 'Colgate Raiders', 'College of Charleston Cougars', 'Colorado Buffaloes', 'Colorado State Rams', 'Columbia Lions', 'Connecticut Huskies', 'Coppin State Eagles', 'Cornell Big Red', 'Creighton Bluejays', 'Dartmouth Big Green', 'Davidson Wildcats', 'Dayton Flyers', "Delaware Fightin' Blue Hens", 'Delaware State Hornets', 'Denver Pioneers', 'DePaul Blue Demons', 'Detroit Mercy Titans', 'Drake Bulldogs', 'Drexel Dragons', 'Duke Blue Devils', 'Duquesne Dukes', 'East Carolina Pirates', 'East Tennessee State Buccaneers', 'Eastern Illinois Panthers', 'Eastern Kentucky Colonels', 'Eastern Michigan Eagles', 'Eastern Washington Eagles', 'Elon Phoenix', 'Evansville Purple Aces', 'Fairfield Stags', 'Fairleigh Dickinson Knights', 'Florida A&M Rattlers', 'Florida Atlantic Owls', 'Florida Gators', 'Florida Gulf Coast Eagles', 'Florida International Panthers', 'Florida State Seminoles', 'Fordham Rams', 'Fresno State Bulldogs', 'Furman Paladins', "Gardner-Webb Runnin' Bulldogs", 'George Mason Patriots', 'George Washington Colonials', 'Georgetown Hoyas', 'Georgia Bulldogs', 'Georgia Southern Eagles', 'Georgia State Panthers', 'Georgia Tech Yellow Jackets', 'Gonzaga Bulldogs', 'Grambling Tigers', 'Grand Canyon Antelopes', 'Green Bay Phoenix', 'Hampton Pirates', 'Hartford Hawks', 'Harvard Crimson', 'Hawaii Warriors', 'High Point Panthers', 'Hofstra Pride', 'Holy Cross Crusaders', 'Houston Baptist Huskies', 'Houston Cougars', 'Howard Bison', 'Idaho State Bengals', 'Idaho Vandals', 'Illinois Fighting Illini', 'Illinois State Redbirds', 'Illinois-Chicago Flames', 'Incarnate Word Cardinals', 'Indiana Hoosiers', 'Indiana State Sycamores', 'Iona Gaels', 'Iowa Hawkeyes', 'Iowa State Cyclones', 'IPFW Mastodons', 'IUPUI Jaguars', 'Jackson State Tigers', 'Jacksonville Dolphins', 'Jacksonville State Gamecocks', 'James Madison Dukes', 'Kansas Jayhawks', 'Kansas State Wildcats', 'Kennesaw State Owls', 'Kent State Golden Flashes', 'Kentucky Wildcats', 'La Salle Explorers', 'Lafayette Leopards', 'Lamar Cardinals', 'Lehigh Mountain Hawks', 'Liberty Flames', 'Lipscomb Bisons', 'Long Beach State 49ers', 'Long Island University Blackbirds', 'Longwood Lancers', 'Louisiana State Fighting Tigers', 'Louisiana Tech Bulldogs', "Louisiana-Lafayette Ragin' Cajuns", 'Louisiana-Monroe Warhawks', 'Louisville Cardinals', 'Loyola (IL) Ramblers', 'Loyola (MD) Greyhounds', 'Loyola Marymount Lions', 'Maine Black Bears', 'Manhattan Jaspers', 'Marist Red Foxes', 'Marquette Golden Eagles', 'Marshall Thundering Herd', 'Maryland Terrapins', 'Maryland-Baltimore County Retrievers', 'Maryland-Eastern Shore Hawks', 'Massachusetts Minutemen', 'Massachusetts-Lowell River Hawks', 'McNeese State Cowboys', 'Memphis Tigers', 'Mercer Bears', 'Miami (FL) Hurricanes', 'Miami (OH) RedHawks', 'Michigan State Spartans', 'Michigan Wolverines', 'Middle Tennessee Blue Raiders', 'Milwaukee Panthers', 'Minnesota Golden Gophers', 'Mississippi Rebels', 'Mississippi State Bulldogs', 'Mississippi Valley State Delta Devils', 'Missouri State Bears', 'Missouri Tigers', 'Missouri-Kansas City Kangaroos', 'Monmouth Hawks', 'Montana Grizzlies', 'Montana State Bobcats', 'Morehead State Eagles', 'Morgan State Bears', "Mount St. Mary's Mountaineers", 'Murray State Racers', 'Navy Midshipmen', 'Nebraska Cornhuskers', 'Nebraska-Omaha Mavericks', 'Nevada Wolf Pack', 'Nevada-Las Vegas Rebels', 'New Hampshire Wildcats', 'New Mexico Lobos', 'New Mexico State Aggies', 'New Orleans Privateers', 'Niagara Purple Eagles', 'Nicholls State Colonels', 'NJIT Highlanders', 'Norfolk State Spartans', 'North Carolina A&T Aggies', 'North Carolina Central Eagles', 'North Carolina State Wolfpack', 'North Carolina Tar Heels', 'North Carolina-Asheville Bulldogs', 'North Carolina-Greensboro Spartans', 'North Carolina-Wilmington Seahawks', 'North Dakota State Bison', 'North Dakota UND', 'North Florida Ospreys', 'North Texas Mean Green', 'Northeastern Huskies', 'Northern Arizona Lumberjacks', 'Northern Colorado Bears', 'Northern Illinois Huskies', 'Northern Iowa Panthers', 'Northern Kentucky Norse', 'Northwestern State Demons', 'Northwestern Wildcats', 'Notre Dame Fighting Irish', 'Oakland Golden Grizzlies', 'Ohio Bobcats', 'Ohio State Buckeyes', 'Oklahoma Sooners', 'Oklahoma State Cowboys', 'Old Dominion Monarchs', 'Oral Roberts Golden Eagles', 'Oregon Ducks', 'Oregon State Beavers', 'Pacific Tigers', 'Penn State Nittany Lions', 'Pennsylvania Quakers', 'Pepperdine Waves', 'Pittsburgh Panthers', 'Portland Pilots', 'Portland State Vikings', 'Prairie View Panthers', 'Presbyterian Blue Hose', 'Princeton Tigers', 'Providence Friars', 'Purdue Boilermakers', 'Quinnipiac Bobcats', 'Radford Highlanders', 'Rhode Island Rams', 'Rice Owls', 'Richmond Spiders', 'Rider Broncs', 'Robert Morris Colonials', 'Rutgers Scarlet Knights', 'Sacramento State Hornets', 'Sacred Heart Pioneers', 'Saint Francis (PA) Red Flash', "Saint Joseph's Hawks", 'Saint Louis Billikens', "Saint Mary's (CA) Gaels", "Saint Peter's Peacocks", 'Sam Houston State Bearkats', 'Samford Bulldogs', 'San Diego State Aztecs', 'San Diego Toreros', 'San Francisco Dons', 'San Jose State Spartans', 'Santa Clara Broncos', 'Savannah State Tigers', 'Seattle Redhawks', 'Seton Hall Pirates', 'Siena Saints', 'South Alabama Jaguars', 'South Carolina Gamecocks', 'South Carolina State Bulldogs', 'South Carolina Upstate Spartans', 'South Dakota Coyotes', 'South Dakota State Jackrabbits', 'South Florida Bulls', 'Southeast Missouri State Redhawks', 'Southeastern Louisiana Lions', 'Southern California Trojans', 'Southern Illinois Salukis', 'Southern Illinois-Edwardsville Cougars', 'Southern Jaguars', 'Southern Methodist Mustangs', 'Southern Mississippi Golden Eagles', 'Southern Utah Thunderbirds', 'St. Bonaventure Bonnies', 'St. Francis (NY) Terriers', "St. John's (NY) Red Storm", 'Stanford Cardinal', 'Stephen F. Austin Lumberjacks', 'Stetson Hatters', 'Stony Brook Seawolves', 'Syracuse Orange', 'Temple Owls', 'Tennessee State Tigers', 'Tennessee Tech Golden Eagles', 'Tennessee Volunteers', 'Tennessee-Martin Skyhawks', 'Texas A&M Aggies', 'Texas A&M-Corpus Christi Islanders', 'Texas Christian Horned Frogs', 'Texas Longhorns', 'Texas Southern Tigers', 'Texas State Bobcats', 'Texas Tech Red Raiders', 'Texas-Arlington Mavericks', 'Texas-El Paso Miners', 'Texas-Rio Grande Valley Vaqueros', 'Texas-San Antonio Roadrunners', 'Toledo Rockets', 'Towson Tigers', 'Troy Trojans', 'Tulane Green Wave', 'Tulsa Golden Hurricane', 'UC-Davis Aggies', 'UC-Irvine Anteaters', 'UC-Riverside Highlanders', 'UC-Santa Barbara Gauchos', 'UCLA Bruins', 'University of California Golden Bears', 'Utah State Aggies', 'Utah Utes', 'Utah Valley Wolverines', 'Valparaiso Crusaders', 'Vanderbilt Commodores', 'Vermont Catamounts', 'Villanova Wildcats', 'Virginia Cavaliers', 'Virginia Commonwealth Rams', 'Virginia Military Institute Keydets', 'Virginia Tech Hokies', 'Wagner Seahawks', 'Wake Forest Demon Deacons', 'Washington Huskies', 'Washington State Cougars', 'Weber State Wildcats', 'West Virginia Mountaineers', 'Western Carolina Catamounts', 'Western Illinois Leathernecks', 'Western Kentucky Hilltoppers', 'Western Michigan Broncos', 'Wichita State Shockers', 'William & Mary Tribe', 'Winthrop Eagles', 'Wisconsin Badgers', 'Wofford Terriers', 'Wright State Raiders', 'Wyoming Cowboys', 'Xavier Musketeers', 'Yale Bulldogs', 'Youngstown State Penguins']
 # yearlist = ['2010','2011','2012','2013','2014','2015','2016','2017']
 yearlist = ['2017']
-# subpagelist = ['school', 'advanced-school', 'advanced-opponent']
-subpagelist = ['school']
+subpagelist = ['school', 'advanced-school', 'advanced-opponent']
+# subpagelist = ['school']
 
 
 for year in yearlist:
     print(year)
+    cursor = []
     for subpage in subpagelist:
         url = "www.sports-reference.com/cbb/seasons/" + year + "-" + subpage + "-stats.html"
         r = requests.get("http://" + url)
@@ -25,18 +27,33 @@ for year in yearlist:
             soup = BeautifulSoup(data, "html.parser")
             # print(soup.get_text)
             for a in soup.find_all('tr'):
-                cursor = ""
                 b = a.find_all('td')
                 # print(b)
                 if b:
                     if 'href' in str(b[0].contents[0]):
                         if str(subpage) == 'school':
-                            cursor = cursor + b[0].contents[0].contents[0] + ","
-                            for i in range(1,15):
-                                # print(b[i].contents[0])
-                                cursor = cursor + str(b[i].contents[0]) + ","
-                            print(cursor)
-
+                            cursor.append(b[0].contents[0].contents[0] + ",")
+                            with open('test.txt', 'w') as f:
+                                for n in range(0, len(cursor)):
+                                    for i in range(1,15):
+                                        # print(b[i].contents[0])
+                                        cursor[n] = cursor[n] + str(b[i].contents[0]) + ","
+                                    f.write(cursor[n] + '\n')
+                                f.close()
+                            # for i in range(16,33):
+                            #     # print(b[i].contents[0])
+                            #     cursor = cursor + str(b[i].contents[0]) + ","
+                            # print(cursor)
+                        # elif str(subpage) == 'advanced-school':
+                        #     for i in range(16, 29):
+                        #         # print(b[i].contents[0])
+                        #         cursor = cursor + str(b[i].contents[0]) + ","
+                        #     print(cursor)
+                        # else:
+                        #     for i in range(16, 29):
+                        #         # print(b[i].contents[0])
+                        #         cursor = cursor + str(b[i].contents[0]) + ","
+                        #     print(cursor)
 
                             # print(b[0].contents[0].contents[0])
                             # print(cursor + b[16].contents[0])

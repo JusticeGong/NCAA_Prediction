@@ -1,3 +1,4 @@
-a = '123'
-b = '456'
-print(a+ b)
+a = []
+a.append("1")
+
+print(a)
