@@ -1,3 +1,5 @@
+###按年份爬取schoolnamelist中每一学校的赛季数据
+
 from bs4 import BeautifulSoup
 import requests
 from array import array
